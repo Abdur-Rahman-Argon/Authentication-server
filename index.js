@@ -25,6 +25,48 @@ async function run() {
       .db("authentication-users")
       .collection("all-users-collection");
     console.log("connect");
+
+    app.put("/users/:email", async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          user: user,
+        },
+      };
+      const result = await AuthenticationUsers.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
+      res.send({ result, status: 200, success: true });
+    });
+
+    // viewers
+    app.get("/viewUser/:email", async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          user: user,
+        },
+      };
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await AuthenticationUsers.findOne(query);
+      res.send(result);
+    });
+
+    // viewers
+    app.get("/update/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await AuthenticationUsers.findOne(query);
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
